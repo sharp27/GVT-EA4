@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EA 4 - Parametrisierte Flächen</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+
+</head>
+
+<body data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="70">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">EA 4 - Parametrisierte Flächen</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#torus">Torusknoten</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tropfen">Tropfen</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#documentationSection">Dokumentation</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-5" id="mainContent">
+        <section id="torus" class="mb-4">
+    <div class="row">
+        <!-- Left Column for Canvas -->
+        <div class="col-md-6">
+            <h2>Torusknoten</h2>
+            <canvas id="webglCanvas" width="700" height="700"></canvas>
+        </div>
+        <!-- Right Column for Explanation Text and Buttons -->
+        <div class="col-md-6 d-flex flex-column align-items-start justify-content-center">
+            <p>Mit den Buttons können Sie die Darstellung zwischen farbiger Ansicht und Drahtgitter wechseln.</p>
+            <button onclick="toggleDisplayModeTorusKnot()">Torusknoten</button>
+            <button onclick="toggleDisplayModeTorus()">Torus</button>
+        </div>
+    </div>
+</section>
+
+<section id="tropfen" class="mb-4">
+    <div class="row">
+        <!-- Left Column for Canvas -->
+        <div class="col-md-6">
+            <h2>Tropfen mit Spiraleffekt</h2>
+            <canvas id="spiralDropCanvas" width="700" height="700"></canvas>
+        </div>
+        <!-- Right Column for Explanation Text and Buttons -->
+        <div class="col-md-6 d-flex flex-column align-items-start justify-content-center">
+            <p>Mit dem Button können Sie die Darstellung zwischen farbiger Ansicht und Drahtgitter wechseln.</p>
+            <button onclick="toggleDisplayModeDrop()">Tropfen</button>
+        </div>
+    </div>
+</section>
+
+<section id="documentationSection" class="mb-4">
+    <h2>Dokumentation</h2>
+    <h3>Torusknoten</h3>
+    <p>
+        Der folgende Abschnitt beschreibt die mathematische Modellierung eines Torus und eines Torusknotens in WebGL. Die Formeln für den Torusknoten basieren auf den mathematischen Darstellungen aus der Quelle 
+        <a href="http://www.3d-meier.de/tut3/Seite175.html" target="_blank">3D-Meier: Torusknoten</a>.
+    </p>
+    <h4>1. Parametrisierung des Torus</h4>
+    <p>
+        Der Torus wird mit einer zweidimensionalen Parametrisierung beschrieben, die entlang zweier Winkel läuft: <code>θ</code> (Theta) und <code>φ</code> (Phi). Diese Parameter repräsentieren die Winkel entlang des großen und kleinen Kreises und beschreiben die Positionen der Punkte im 3D-Raum.
+    </p>
+    <ul>
+        <li><strong>x = (majorRadius + minorRadius * cos(φ)) * cos(θ)</strong></li>
+        <li><strong>y = (majorRadius + minorRadius * cos(φ)) * sin(θ)</strong></li>
+        <li><strong>z = minorRadius * sin(φ)</strong></li>
+    </ul>
+    <p>
+        Im Code sind die Radien wie folgt definiert:
+        <ul>
+            <li><code>majorRadius = 100</code>: Der Radius des großen Kreises (Major-Kreis), um den sich der kleinere Kreis dreht.</li>
+            <li><code>minorRadius = 10</code>: Der Radius des kleineren Kreises (Minor-Kreis), der um den Major-Kreis rotiert.</li>
+        </ul>
+    </p>
+    <p>
+        Dabei:
+    </p>
+    <ul>
+        <li><code>θ</code> ist der Winkel entlang des größeren Kreisradius, d.h., die „Rotation“ um den Major-Kreis.</li>
+        <li><code>φ</code> ist der Winkel entlang des kleineren Kreisradius, der „Rotation“ um den Minor-Kreis.</li>
+    </ul>
+    <p>
+        Indem man <code>θ</code> und <code>φ</code> von <code>0</code> bis <code>2π</code> variiert (mit 64 Hauptsegmenten und 32 Neben-Segmenten), entstehen Punkte, die auf einer Linie entlang der Oberfläche des Torus verlaufen. Da diese Parameter in Schleifen durchlaufen werden, beschreibt der Code eine Reihe von Linien entlang der Oberfläche des Torus, die zusammen die geschlossene, ringartige Struktur des Torus bilden.
+    </p>
+    <br/>
+    <h4>2. Parametrisierung des Torusknotens</h4>
+    <p>
+        Der Torusknoten ist komplizierter und verwendet eine parametrisierte Formel, um eine geknotete Bahn im Raum zu beschreiben. Diese Bahn entsteht durch die Rotation um zwei Winkel und die Einbeziehung von Knotenzahlen <code>p</code> und <code>q</code>. Diese Parameter beeinflussen die Anzahl der Windungen und Knoten, sodass die Form des Torusknotens entsteht:
+    </p>
+    <ul>
+        <li><strong>centerX = (R + r * cos(p * t)) * cos(q * t)</strong></li>
+        <li><strong>centerY = (R + r * cos(p * t)) * sin(q * t)</strong></li>
+        <li><strong>centerZ = r * sin(p * t)</strong></li>
+    </ul>
+    <p>
+        Im Code sind die Werte wie folgt definiert:
+        <ul>
+            <li><code>R = 100</code>: Der Radius des großen Kreises, der die geknotete Bahn beschreibt.</li>
+            <li><code>r = 25</code>: Der Radius des kleineren Kreises entlang der geknoteten Bahn.</li>
+            <li><code>p = 7</code> und <code>q = 3</code>: Diese bestimmen die Anzahl der Windungen im Knoten.</li>
+            <li><code>tubeRadius = 7</code>: Der Radius der röhrenartigen Struktur, die entlang der Bahn gezeichnet wird.</li>
+        </ul>
+    </p>
+    <p>
+        Hier:
+    </p>
+    <ul>
+        <li><code>t</code> ist der Parameter, der entlang der geknoteten Bahn läuft.</li>
+        <li><code>p</code> und <code>q</code> bestimmen die Anzahl der Knoten oder Windungen, die der Torusknoten hat.</li>
+    </ul>
+    <p>
+        Die Funktion durchläuft <code>t</code> von <code>0</code> bis <code>2π</code> in kleinen Schritten (mit 512 Knotensegmenten und 12 Rohrsegmenten) und berechnet dabei eine Reihe von Punkten, die einer Linie entlang der geknoteten Bahn folgen. Ein kleinerer Kreis (der „Röhrenradius“) wird um diese Linie gezeichnet, um die röhrenartige Struktur zu schaffen.
+    </p>
+    <br/><br/>
+    <h3>Tropfen mit Spiraleffekt</h3>
+<p>
+    Als Ausgangspunkt für den "Tropfen mit Spiraleffekt" wurden die Formeln eines Tropfens aus der Quelle 
+    <a href="http://www.3d-meier.de/tut3/Seite44.html" target="_blank">3D-Meier: Tropfen</a> verwendet. Durch Experimente auf der Website 
+    <a href="https://stemkoski.github.io/Three.js/Graphulus-Surface.html" target="_blank">Graphulus Surface</a> wurde dem Tropfen eine Rotation hinzugefügt, was zu einer spiralartigen Form führte.
+</p>
+
+
+<h4>Parametrisierung des Tropfens mit Spiraleffekt</h4>
+<p>
+    Der Tropfen wird mit einer Parametrisierung beschrieben, die zwei Parameter nutzt: <code>u</code> und <code>v</code>. Dabei beschreibt <code>u</code> die Form des Tropfens, während <code>v</code> für eine Rotation sorgt, die eine Spiralform erzeugt.
+</p>
+<ul>
+    <li><strong>x = a * (b - cos(u)) * sin(u) * cos(v + p * u)</strong></li>
+    <li><strong>y = a * (b - cos(u)) * sin(u) * sin(v + p * u)</strong></li>
+    <li><strong>z = cos(u)</strong></li>
+</ul>
+<p>
+    Im Code sind die Parameterwerte wie folgt festgelegt:
+    <ul>
+        <li><code>a = 0.5</code>: Der Skalierungsfaktor für die gesamte Form.</li>
+        <li><code>b = 1.1</code>: Die Breite der Tropfenform ohne Rotation.</li>
+        <li><code>p = 1</code>: Der Faktor für die Rotation um die Achse, der die Spiralbewegung bestimmt.</li>
+    </ul>
+</p>
+<p>
+    Dabei:
+</p>
+<ul>
+    <li><code>u</code> ist der Winkel, der die Form des Tropfens entlang der z-Achse kontrolliert (läuft von <code>0</code> bis <code>π</code> in <code>64</code> Segmenten).</li>
+    <li><code>v</code> ist der Winkel für die Rotation um die z-Achse (läuft von <code>0</code> bis <code>2π</code> in <code>64</code> Segmenten).</li>
+</ul>
+<p>
+    Indem <code>u</code> und <code>v</code> variiert werden, entsteht eine Serie von Punkten, die sich entlang einer spiralartigen Form bewegen. Diese Punkte werden anschließend verbunden, um eine röhrenartige Struktur mit einer Drehbewegung zu erzeugen, die wie ein spiralförmiger Tropfen aussieht.
+</p>
+
+
+</section>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
